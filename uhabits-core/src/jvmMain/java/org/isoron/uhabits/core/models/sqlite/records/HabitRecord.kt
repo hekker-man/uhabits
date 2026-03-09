@@ -21,6 +21,7 @@ package org.isoron.uhabits.core.models.sqlite.records
 import org.isoron.uhabits.core.database.Column
 import org.isoron.uhabits.core.database.Table
 import org.isoron.uhabits.core.models.Frequency
+import org.isoron.uhabits.core.models.FrequencyMode
 import org.isoron.uhabits.core.models.Habit
 import org.isoron.uhabits.core.models.HabitType
 import org.isoron.uhabits.core.models.NumericalHabitType
@@ -48,6 +49,9 @@ class HabitRecord {
 
     @field:Column(name = "freq_den")
     var freqDen: Int? = null
+
+    @field:Column(name = "freq_mode")
+    var freqMode: Int? = null
 
     @field:Column
     var color: Int? = null
@@ -105,6 +109,7 @@ class HabitRecord {
         val (numerator, denominator) = model.frequency
         freqNum = numerator
         freqDen = denominator
+        freqMode = model.frequency.mode.value
         reminderDays = 0
         reminderMin = null
         reminderHour = null
@@ -121,7 +126,11 @@ class HabitRecord {
         habit.name = name!!
         habit.description = description!!
         habit.question = question!!
-        habit.frequency = Frequency(freqNum!!, freqDen!!)
+        habit.frequency = Frequency(
+            freqNum!!,
+            freqDen!!,
+            FrequencyMode.fromInt(freqMode ?: FrequencyMode.DAYS.value)
+        )
         habit.color = PaletteColor(color!!)
         habit.isArchived = archived != 0
         habit.type = HabitType.fromInt(type!!)

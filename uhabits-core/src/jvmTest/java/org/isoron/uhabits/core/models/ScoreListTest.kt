@@ -23,6 +23,7 @@ import org.hamcrest.number.IsCloseTo
 import org.hamcrest.number.OrderingComparison
 import org.isoron.uhabits.core.BaseUnitTest
 import org.isoron.uhabits.core.models.Entry.Companion.SKIP
+import org.isoron.uhabits.core.models.FrequencyMode.WEEKS
 import org.isoron.uhabits.core.utils.DateUtils.Companion.getToday
 import org.junit.Before
 import org.junit.Test
@@ -149,7 +150,7 @@ class YesNoScoreListTest : BaseScoreListTest() {
     fun test_imperfectNonDaily() {
         // If the habit should be performed 3 times per week and the user misses 1 repetition
         // each week, score should converge to 66%.
-        habit.frequency = Frequency(3, 7)
+        habit.frequency = Frequency(3, 7, WEEKS)
         val values = ArrayList<Int>()
         for (k in 0..99) {
             values.add(Entry.YES_MANUAL)
@@ -164,7 +165,7 @@ class YesNoScoreListTest : BaseScoreListTest() {
         assertThat(habit.scores[today].value, IsCloseTo.closeTo(2 / 3.0, E))
 
         // Missing 2 repetitions out of 4 per week, the score should converge to 50%
-        habit.frequency = Frequency(4, 7)
+        habit.frequency = Frequency(4, 7, WEEKS)
         habit.recompute()
         assertThat(habit.scores[today].value, IsCloseTo.closeTo(0.5, E))
     }
@@ -173,7 +174,7 @@ class YesNoScoreListTest : BaseScoreListTest() {
     fun test_irregularNonDaily() {
         // If the user performs habit perfectly each week, but on different weekdays,
         // score should still converge to 100%
-        habit.frequency = Frequency(1, 7)
+        habit.frequency = Frequency.WEEKLY
         val values = ArrayList<Int>()
         for (k in 0..99) {
             // Week 0

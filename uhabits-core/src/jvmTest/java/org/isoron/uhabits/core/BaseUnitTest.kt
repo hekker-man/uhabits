@@ -32,6 +32,7 @@ import org.isoron.uhabits.core.tasks.SingleThreadTaskRunner
 import org.isoron.uhabits.core.test.HabitFixtures
 import org.isoron.uhabits.core.utils.DateUtils.Companion.getStartOfTodayCalendar
 import org.isoron.uhabits.core.utils.DateUtils.Companion.setFixedLocalTime
+import org.isoron.uhabits.core.utils.DateUtils.Companion.setFirstWeekdayNumber
 import org.isoron.uhabits.core.utils.DateUtils.Companion.setStartDayOffset
 import org.junit.After
 import org.junit.Before
@@ -48,6 +49,7 @@ import java.io.InputStream
 import java.nio.file.Paths
 import java.sql.DriverManager
 import java.sql.SQLException
+import java.util.Calendar
 
 @RunWith(MockitoJUnitRunner::class)
 open class BaseUnitTest {
@@ -78,6 +80,7 @@ open class BaseUnitTest {
     open fun setUp() {
         setFixedLocalTime(FIXED_LOCAL_TIME)
         setStartDayOffset(0, 0)
+        setFirstWeekdayNumber(Calendar.SATURDAY)
         val memoryModelFactory = MemoryModelFactory()
         habitList = spy(memoryModelFactory.buildHabitList())
         fixtures = HabitFixtures(memoryModelFactory, habitList)
@@ -92,6 +95,7 @@ open class BaseUnitTest {
         validateMockitoUsage()
         setFixedLocalTime(null)
         setStartDayOffset(0, 0)
+        setFirstWeekdayNumber(null)
     }
 
     fun unixTime(year: Int, month: Int, day: Int): Long {

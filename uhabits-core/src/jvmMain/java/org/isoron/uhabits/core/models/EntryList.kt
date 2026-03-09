@@ -98,7 +98,9 @@ open class EntryList {
             original.forEach { add(it) }
         } else {
             val intervals = buildIntervals(frequency, original)
-            snapIntervalsTogether(intervals)
+            if (frequency.mode == FrequencyMode.DAYS) {
+                snapIntervalsTogether(intervals)
+            }
             val computed = buildEntriesFromInterval(original, intervals)
             computed.filter { it.value != UNKNOWN || it.notes.isNotEmpty() }.forEach { add(it) }
         }
@@ -248,6 +250,16 @@ open class EntryList {
             freq: Frequency,
             entries: List<Entry>
         ): ArrayList<Interval> {
+            if (freq.mode == FrequencyMode.WEEKS && freq.denominator == 7) {
+                return buildWeekIntervals(freq, entries)
+            }
+            return buildRollingIntervals(freq, entries)
+        }
+
+        private fun buildRollingIntervals(
+            freq: Frequency,
+            entries: List<Entry>
+        ): ArrayList<Interval> {
             val filtered = entries.filter { it.value == YES_MANUAL }
             val num = freq.numerator
             val den = freq.denominator
@@ -270,6 +282,29 @@ open class EntryList {
                 }
             }
             return intervals
+        }
+
+        private fun buildWeekIntervals(
+            freq: Frequency,
+            entries: List<Entry>
+        ): ArrayList<Interval> {
+            val filtered = entries.filter { it.value == YES_MANUAL }
+            val firstWeekday = DateUtils.getFirstWeekdayNumber()
+            val intervals = arrayListOf<Interval>()
+            val grouped = filtered.groupBy {
+                it.timestamp.truncate(DateUtils.TruncateField.WEEK_NUMBER, firstWeekday)
+            }
+
+            grouped.entries.sortedByDescending { it.key }.forEach { (weekStart, weekEntries) ->
+                if (weekEntries.size < freq.numerator) return@forEach
+                val completionTimestamp = weekEntries
+                    .sortedBy { it.timestamp }
+                    .get(freq.numerator - 1)
+                    .timestamp
+                val weekEnd = weekStart.plus(6)
+                intervals.add(Interval(completionTimestamp, completionTimestamp, weekEnd))
+            }
+            return ArrayList(intervals.sortedByDescending { it.begin })
         }
     }
 }

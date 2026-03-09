@@ -34,6 +34,7 @@ abstract class DateUtils {
         private var fixedLocalTime: Long? = null
         private var fixedTimeZone: TimeZone? = null
         private var fixedLocale: Locale? = null
+        private var fixedFirstWeekday: Int? = null
         private var startDayHourOffset: Int = 0
         private var startDayMinuteOffset: Int = 0
 
@@ -151,6 +152,11 @@ abstract class DateUtils {
         @JvmStatic
         fun getFirstWeekdayNumberAccordingToLocale(): Int {
             return GregorianCalendar(getLocale()).firstDayOfWeek
+        }
+
+        @JvmStatic
+        fun getFirstWeekdayNumber(): Int {
+            return fixedFirstWeekday ?: getFirstWeekdayNumberAccordingToLocale()
         }
 
         /**
@@ -351,6 +357,11 @@ abstract class DateUtils {
         @JvmStatic
         fun setFixedLocale(newLocale: Locale?) {
             this.fixedLocale = newLocale
+        }
+
+        @JvmStatic
+        fun setFirstWeekdayNumber(newFirstWeekday: Int?) {
+            this.fixedFirstWeekday = newFirstWeekday
         }
     }
 

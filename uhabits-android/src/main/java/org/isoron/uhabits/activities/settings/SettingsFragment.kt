@@ -46,6 +46,7 @@ import org.isoron.uhabits.activities.habits.list.RESULT_REPAIR_DB
 import org.isoron.uhabits.core.preferences.Preferences
 import org.isoron.uhabits.core.ui.NotificationTray
 import org.isoron.uhabits.core.utils.DateUtils.Companion.getLongWeekdayNames
+import org.isoron.uhabits.core.utils.DateUtils.Companion.setFirstWeekdayNumber
 import org.isoron.uhabits.notifications.AndroidNotificationTray.Companion.createAndroidNotificationChannel
 import org.isoron.uhabits.notifications.RingtoneManager
 import org.isoron.uhabits.utils.StyledResources
@@ -187,6 +188,16 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         if (key == "pref_widget_opacity" && widgetUpdater != null) {
             Log.d("SettingsFragment", "updating widgets")
             widgetUpdater!!.updateWidgets()
+        }
+        if (key == "pref_first_weekday") {
+            setFirstWeekdayNumber(prefs.firstWeekdayInt)
+            val appContext = requireContext().applicationContext
+            if (appContext is HabitsApplication) {
+                for (habit in appContext.component.habitList) {
+                    habit.recompute()
+                }
+            }
+            widgetUpdater?.updateWidgets()
         }
         BackupManager.dataChanged("org.isoron.uhabits")
         updateWeekdayPreference()

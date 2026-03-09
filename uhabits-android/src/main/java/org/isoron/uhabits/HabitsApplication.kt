@@ -24,6 +24,7 @@ import android.content.Context
 import org.isoron.uhabits.core.database.UnsupportedDatabaseVersionException
 import org.isoron.uhabits.core.reminders.ReminderScheduler
 import org.isoron.uhabits.core.ui.NotificationTray
+import org.isoron.uhabits.core.utils.DateUtils.Companion.setFirstWeekdayNumber
 import org.isoron.uhabits.core.utils.DateUtils.Companion.setStartDayOffset
 import org.isoron.uhabits.inject.AppContextModule
 import org.isoron.uhabits.inject.DaggerHabitsApplicationComponent
@@ -75,6 +76,7 @@ class HabitsApplication : Application() {
         } else {
             setStartDayOffset(0, 0)
         }
+        setFirstWeekdayNumber(prefs.firstWeekdayInt)
 
         val habitList = component.habitList
         for (h in habitList) h.recompute()
