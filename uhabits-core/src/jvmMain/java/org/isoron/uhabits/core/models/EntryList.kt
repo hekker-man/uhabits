@@ -302,7 +302,7 @@ open class EntryList {
                     .get(freq.numerator - 1)
                     .timestamp
                 val weekEnd = weekStart.plus(6)
-                intervals.add(Interval(completionTimestamp, completionTimestamp, weekEnd))
+                intervals.add(Interval(weekStart, completionTimestamp, weekEnd))
             }
             return ArrayList(intervals.sortedByDescending { it.begin })
         }
